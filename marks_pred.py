@@ -1,5 +1,3 @@
-QUIZ_DEFAULT = 74.836214
-
 import numpy as np
 import joblib
 import pandas as pd
@@ -42,28 +40,6 @@ def calculate_participation(attendance, quiz_avg, study_hours):
 
     return np.clip(participation, 0, 100)
 
-def calculate_stress(midterm_avg, study_hours, sleep_hours):
-    # Academic stress
-    academic_stress = 100 - midterm_avg
-
-    # Burnout stress (weekly hours beyond 35)
-    burnout_stress = np.clip(((study_hours-35)/15)*100, 0, 100)
-
-    # Sleep stress (ideal 7 hrs)
-    sleep_stress = np.clip(((7-sleep_hours)/7)*100, 0, 100)
-
-    combined = (
-        0.5 * academic_stress +
-        0.3 * sleep_stress +
-        0.2 * burnout_stress
-    )
-
-    # Convert 0–100 scale → 1–10 scale (because model expects 1–10)
-    stress_1_to_10 = round((combined / 100) * 9 + 1)
-
-    return int(np.clip(stress_1_to_10, 1, 10))
-
-
 # User Inputs
 
 assignments = get_average_input("Enter Assignment scores: ")
@@ -73,17 +49,17 @@ attendance = float(input("Attendance %: "))
 study_hours = float(input("Study Hours per week: "))
 sleep_hours = float(input("Sleep Hours per night: "))
 
+calculated_default = (assignments+projects+midterms)/3
 quiz = get_average_input(
     "Enter Quiz scores (comma-separated, or press Enter if none): ",
     allow_empty=True,
-    default=QUIZ_DEFAULT
+    default=calculated_default
 )
 
 
 # Derived Values
 
 participation_score = calculate_participation(attendance, quiz, study_hours)
-stress_level = calculate_stress(midterms, study_hours, sleep_hours)
 
 # Build Input DataFrame
 
