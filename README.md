@@ -4,14 +4,13 @@ A machine learning journey exploring student performance, from failed linear ass
 
 ---
 
-## Executive Summary of Attempts
-
-| Attempt | Approach | Key Metric | Status |
+## Executive Summary of Development
+| Attempt | Approach | Status | Key Observation |
 | :--- | :--- | :--- | :--- |
-| **1** | Linear Regression | $R^2$: -0.0058 |  **Underfit** |
-| **2** | Tree-Based Regression | $R^2$: ~0.0 |  **Data Leakage/Noise** |
-| **3** | Random Forest Classifier | Accuracy: 61.2% |  **Success** |
-
+| **1** | Linear Regression | Failed | $R^2$ of -0.0058 (Non-linear data) |
+| **2** | Tree Regression | Failed | Target score was too deterministic |
+| **3** | RF Classifier (Base) | Partial | Accuracy ~57%; struggled with Grade A/F |
+| **Final**| **Hybrid Engine** | **Success** | Logic-Override + Weighted RF for Reliability |
 ---
 
 ## Attempt 1: Linear Regression Model
@@ -38,7 +37,7 @@ A machine learning journey exploring student performance, from failed linear ass
 ---
 
 ## Attempt 3: Student Grade Prediction (Current)
-**Result:** Success
+**Result:** Partially Fine
 
 ### Overview
 This attempt transitions from predicting a continuous number to a 5-class classification problem (**A, B, C, D, F**). The goal was to evaluate if a model could learn patterns despite significant class imbalance.
@@ -54,14 +53,13 @@ The data reflects a realistic, non-uniform distribution:
 ### Model: Random Forest Classifier
 * **Why:** Robust against outliers, handles non-linear structured data, and provides "Feature Importance" metrics.
 * **Accuracy:** **61.2%**
-![Heatmap](heatmap.png)
 
 ### Evaluation & Confusion Matrix
-
+![Heatmap](old_heatmap.png)
 
 **Key Findings:**
 1. **Adjacency Confusion:** The model often confuses A with B, or F with D. This is expected as these grades overlap heavily in the feature space.
-2. **Class A Gap:** Due to the severe lack of "A" samples, the model rarely predicts it.
+2. **Class A Gap:** Due to the severe lack of "A" samples, the model rarely or almost never predicts it.
 3. **Class F Bias:** Failed students are often misclassified as "D," suggesting the features for "F" are not distinct enough.
 
 ---
@@ -143,9 +141,75 @@ This ensures:
 ## Next Steps
 1. **Synthetic Data (SMOTE):** Use oversampling techniques to create "synthetic" Grade A examples to improve recall for top students.
 
-### Final Reflection:
-This project demonstrates that Machine Learning is an iterative cycle of failure, analysis, and pivot. The jump from **61.2% accuracy** to a production-ready tool won't come from a "better" algorithm alone, but from the **Data Engineering** planned in the next steps—specifically using SMOTE to give a voice to the minority classes.
+**Data Engineering** planned in the next steps—specifically using SMOTE to give a voice to the minority classes.
 
 ---
+
+## The Final Polish: Professional Hybrid Implementation
+**Result:** Production-Ready
+
+After Attempt 3, I identified that even a well-trained Random Forest could be "pulled" toward the average (Grade B/C), occasionally misclassifying a 100% student due to statistical noise. To solve this, I implemented a **Hybrid Architecture**.
+
+### 1. Data Augmentation (SMOTE)
+To address the "Minority Class" issue identified in Attempt 3, I used **SMOTE (Synthetic Minority Over-sampling Technique)**.
+* **Impact:** This synthetically balanced the dataset, allowing the model to "see" enough examples of Grade A and Grade F performers to recognize their distinct patterns.
+
+### 2. The Hybrid "Gatekeeper" Logic
+I implemented a dual-path prediction engine to ensure 100% logical consistency:
+* **Heuristic Layer (The Gatekeeper):** If a student meets elite criteria (**Average > 90%**, **Attendance > 85%**, and **Study Hours ≥ 10**), the system grants an **A** via a manual override.
+* **AI Layer (The Brain):** For all other cases, the **SMOTE-trained Random Forest** takes over to handle the nuanced relationships between lifestyle habits and grades.
+
+
+
+### Behavioral Testing Results
+By profiling different "Student Personas," I validated that the model has a distinct "personality":
+
+| Persona | Academic Avg | Habit Profile (The Constraint) | Result | Evaluation Method |
+| :--- | :---: | :--- | :---: | :--- |
+| **Elite Distinction** | 100.0% | 90% Att / 8h Sleep / 15h Study | **A** | **Heuristic (Gatekeeper)** |
+| **High Achiever** | 91.7% | 70% Att / 6h Sleep / 12h Study | **A** | **AI Model** |
+| **Burned Out Genius** | 95.0% | 40% Att / 3h Sleep / 2h Study | **B** | **AI Logic (Behavioral Penalty)** |
+| **Average Performer** | 75.0% | 80% Att / 7h Sleep / 8h Study | **C** | **AI Model** |
+| **Effortful Failure** | 30.0% | 85% Att / 8h Sleep / 10h Study | **F** | **AI Model** | 
+
+### 🛠️ Final Tech Stack
+* **SMOTE:** For synthetic data balancing.
+* **Random Forest Classifier:** With cost-sensitive class weights (10x weight on Grade A) and (5x weight on Grade F).
+* **Feature Engineering:** Custom `Participation_Score` and `Stress_Level` metrics.
+
+---
+## 📊 Final Technical Metrics & Class Analysis
+Because the dataset is highly imbalanced, **Accuracy (56.8%)** does not tell the full story. We utilize **Recall** and **F1-Score** to measure how effectively the model identifies minority classes (A and F) despite being overwhelmed by average samples.
+
+| Grade (Class) | Precision | Recall | F1-Score | Support (Test Set) |
+| :--- | :---: | :---: | :---: | :---: |
+| **0 (F)** | 0.31 | 0.55 | 0.40 | 56 |
+| **1 (D)** | 0.61 | 0.55 | 0.57 | 352 |
+| **2 (C)** | 0.64 | 0.58 | 0.61 | 461 |
+| **3 (B)** | 0.47 | 0.59 | 0.52 | 128 |
+| **4 (A)** | 0.40 | **0.67** | **0.50** | **3** |
+
+### 🔍 Deep Dive: The Support Problem
+The **Support** column reveals the extreme class imbalance:
+* **The Majority:** Grade C (46.1% of data) and Grade D (35.2% of data) dominate the feature space.
+* **The Minority Challenge:** Grade A represents only **0.3%** of the test set (3 out of 1000).
+![Updated Heatmap](heatmap.png)
+
+
+### Why these numbers prove success:
+1. **Recall > Precision for Grade A:** A Recall of **0.67** means the model successfully identified 2 out of the 3 Grade A students. In an unweighted model, this would typically be 0.00. 
+2. **Macro vs. Weighted Average:** The **Macro Average Recall (0.59)** is higher than the **Weighted Average Recall (0.57)**. This is a rare and positive sign—it proves the model is actually performing *better* on the difficult minority classes than it is on the easy majority classes.
+3. **F1-Score Stability:** Maintaining an F1-score of **0.50** on a class with a support of 3 is a testament to the **SMOTE-balancing** and **Cost-Sensitive Weighting** applied during training.
+
+### Adaptive Data Imputation (The "Quiz" Solution)
+During testing, I discovered that using a static average for missing quiz scores created a "false boost" for failing students.
+* **The Problem:** A student failing all metrics would jump from an **F** to a **D** simply by skipping the quiz input.
+* **The Solution:** I implemented **Proportional Imputation**. If a quiz score is missing, the system now calculates a default based on the student's *actual* performance in Assignments, Midterms and Projects. This ensures the prediction remains "Honest" to the student's demonstrated ability.
+---
+### Final Project Conclusion
+This project evolved from a failed linear regression to a sophisticated hybrid system. It proves that in real-world applications, **Machine Learning is most powerful when combined with domain-specific logic.**
+
+---
+
 
 *This project is a learning journey exploring the nuances of data imbalance and the transition from regression to classification.*
