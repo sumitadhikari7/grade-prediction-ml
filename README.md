@@ -160,6 +160,20 @@ I implemented a dual-path prediction engine to ensure 100% logical consistency:
 * **AI Layer (The Brain):** For all other cases, the **SMOTE-trained Random Forest** takes over to handle the nuanced relationships between lifestyle habits and grades.
 
 
+## Using the Predictor
+The model requires **7 specific data points** to generate a prediction. To improve the User Experience (UX), the script allows for both raw scores and automatic averaging of multiple entries.
+
+| Input Feature | Type | Description |
+| :--- | :---: | :--- |
+| **Assignment Scores** | Numeric | Single score or comma-separated list (auto-averaged). |
+| **Project Score** | Numeric | Total score for course projects. |
+| **Midterm Score** | Numeric | Score achieved in the mid-semester examination. |
+| **Quiz Scores** | Numeric | Optional. If skipped, uses **Adaptive Imputation**. |
+| **Attendance %** | Numeric | Total percentage of classes attended. |
+| **Study Hours** | Numeric | Total hours spent studying per week. |
+| **Sleep Hours** | Numeric | Average hours of sleep per night. |
+
+---
 
 ### Behavioral Testing Results
 By profiling different "Student Personas," I validated that the model has a distinct "personality":
@@ -175,7 +189,7 @@ By profiling different "Student Personas," I validated that the model has a dist
 ### 🛠️ Final Tech Stack
 * **SMOTE:** For synthetic data balancing.
 * **Random Forest Classifier:** With cost-sensitive class weights (10x weight on Grade A) and (5x weight on Grade F).
-* **Feature Engineering:** Custom `Participation_Score` and `Stress_Level` metrics.
+* **Feature Engineering:** Custom `Participation_Score` and `Quiz Score` metrics.
 
 ---
 ## 📊 Final Technical Metrics & Class Analysis
