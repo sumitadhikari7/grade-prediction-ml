@@ -6,7 +6,9 @@ import pandas as pd
 
 model = joblib.load("student_grade_rf.pkl")
 
-# For multiple inputs and calculate average
+
+
+# Input Utility
 
 def get_average_input(prompt, allow_empty=False, default=None):
     user_input = input(prompt)
@@ -24,7 +26,10 @@ def get_average_input(prompt, allow_empty=False, default=None):
         print("Invalid input. Provide comma-separated numbers.")
         return get_average_input(prompt, allow_empty, default)
 
+
+
 # Engineered Features
+
 
 def calculate_participation(attendance, quiz_avg, study_hours):
     study_component = np.clip((study_hours/30)*100, 0, 100)
@@ -58,6 +63,7 @@ def calculate_stress(midterm_avg, study_hours, sleep_hours):
 
     return int(np.clip(stress_1_to_10, 1, 10))
 
+
 # User Inputs
 
 assignments = get_average_input("Enter Assignment scores: ")
@@ -66,7 +72,6 @@ midterms = get_average_input("Enter Midterm scores: ")
 attendance = float(input("Attendance %: "))
 study_hours = float(input("Study Hours per week: "))
 sleep_hours = float(input("Sleep Hours per night: "))
-age = int(input("Enter your age: "))
 
 quiz = get_average_input(
     "Enter Quiz scores (comma-separated, or press Enter if none): ",
@@ -74,32 +79,23 @@ quiz = get_average_input(
     default=QUIZ_DEFAULT
 )
 
+
 # Derived Values
+
 participation_score = calculate_participation(attendance, quiz, study_hours)
 stress_level = calculate_stress(midterms, study_hours, sleep_hours)
 
-# Fixed Features
-internet_access = 1
-parent_edu = 3
-family_income = 2
-extracurricular = 1
-
 # Build Input DataFrame
+
 input_dict = {
-    'Assignments_Avg': assignments,
-    'Projects_Score': projects,
-    'Midterm_Score': midterms,
     'Attendance (%)': attendance,
-    'Study_Hours_per_Week': study_hours,
+    'Midterm_Score': midterms,
+    'Assignments_Avg': assignments,
     'Quizzes_Avg': quiz,
     'Participation_Score': participation_score,
-    'Internet_Access_at_Home': internet_access,
-    'Parent_Education_Level': parent_edu,
-    'Family_Income_Level': family_income,
-    'Stress_Level (1-10)': stress_level,
-    'Sleep_Hours_per_Night': sleep_hours,
-    'Extracurricular_Activities': extracurricular,
-    'Age': age
+    'Projects_Score': projects,
+    'Study_Hours_per_Week': study_hours,
+    'Sleep_Hours_per_Night': sleep_hours
 }
 
 input_data = pd.DataFrame([input_dict])
@@ -107,8 +103,8 @@ input_data = pd.DataFrame([input_dict])
 # Force correct column order
 input_data = input_data[model.feature_names_in_]
 
-# Prediction
-prediction = model.predict(input_data)[0]
+
+# Prediction (Hybrid Logic)
 
 grade_map_rev = {
     0: "F",
@@ -118,8 +114,14 @@ grade_map_rev = {
     4: "A"
 }
 
-print("\nPredicted Grade:", grade_map_rev[prediction])
+academic_avg = np.mean([assignments, projects, midterms, quiz])
 
-# print("\nFeature Importances:")
-# for name, importance in zip(model.feature_names_in_, model.feature_importances_):
-#     print(f"{name:30} {importance:.4f}")
+if academic_avg >90 and attendance>85 and study_hours>=10:
+    final_grade = "A"
+    logic_used = "Heuristic (Elite Criteria)"
+else:
+    p_num = model.predict(input_data)[0]
+    final_grade = grade_map_rev[p_num]
+    logic_used = "Random Forest AI"
+
+print("\nPredicted Grade:", final_grade, "\nLogic: ", logic_used)
