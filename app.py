@@ -74,3 +74,24 @@ if st.button("Predict Grade"):
 
     input_data = pd.DataFrame([input_dict])
     input_data = input_data[model.feature_names_in_]
+
+    grade_map_rev = {
+        0: "F",
+        1: "D",
+        2: "C",
+        3: "B",
+        4: "A"
+    }
+
+    academic_avg = np.mean([assignments, projects, midterms, quiz])
+
+    if academic_avg > 90 and attendance > 85 and study_hours >= 10:
+        final_grade = "A"
+        logic_used = "Heuristic (Elite Criteria)"
+    else:
+        p_num = model.predict(input_data)[0]
+        final_grade = grade_map_rev[p_num]
+        logic_used = "Random Forest AI"
+
+    st.success(f"Predicted Grade: {final_grade}")
+    st.write("Logic Used:", logic_used)
