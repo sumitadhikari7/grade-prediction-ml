@@ -32,3 +32,7 @@ assignments_input = st.text_input("Assignment Scores (comma separated)", "80,85,
 projects_input = st.text_input("Project Scores (comma separated)", "85,90")
 midterms_input = st.text_input("Midterm Scores (comma separated)", "78,82")
 quiz_input = st.text_input("Quiz Scores (comma separated, optional)", "")
+
+attendance = st.slider("Attendance (%)", 0.0, 100.0, 85.0)
+study_hours = st.slider("Study Hours per Week", 0.0, 40.0, 10.0)
+sleep_hours = st.slider("Sleep Hours per Night", 0.0, 12.0, 7.0)
