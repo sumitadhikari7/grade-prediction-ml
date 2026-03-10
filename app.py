@@ -36,3 +36,14 @@ quiz_input = st.text_input("Quiz Scores (comma separated, optional)", "")
 attendance = st.slider("Attendance (%)", 0.0, 100.0, 85.0)
 study_hours = st.slider("Study Hours per Week", 0.0, 40.0, 10.0)
 sleep_hours = st.slider("Sleep Hours per Night", 0.0, 12.0, 7.0)
+
+
+if st.button("Predict Grade"):
+
+    assignments = get_average_input(assignments_input)
+    projects = get_average_input(projects_input)
+    midterms = get_average_input(midterms_input)
+
+    if assignments is None or projects is None or midterms is None:
+        st.error("Invalid input format. Use comma separated numbers.")
+        st.stop()
