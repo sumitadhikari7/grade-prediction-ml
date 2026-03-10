@@ -34,8 +34,8 @@ midterms_input = st.text_input("Midterm Scores (comma separated)", "78,82")
 quiz_input = st.text_input("Quiz Scores (comma separated, optional)", "")
 
 attendance = st.slider("Attendance (%)", 0.0, 100.0, 85.0)
-study_hours = st.slider("Study Hours per Week", 0.0, 40.0, 10.0)
-sleep_hours = st.slider("Sleep Hours per Night", 0.0, 12.0, 7.0)
+study_hours = st.slider("Study Hours per Week", 0.0, 40.0, 10.0, step=0.5)
+sleep_hours = st.slider("Sleep Hours per Night", 0.0, 12.0, 7.0, step=0.5)
 
 
 if st.button("Predict Grade"):
@@ -85,7 +85,7 @@ if st.button("Predict Grade"):
 
     academic_avg = np.mean([assignments, projects, midterms, quiz])
 
-    if academic_avg > 90 and attendance > 85 and study_hours >= 10:
+    if academic_avg >= 90 and attendance >= 85 and study_hours >= 10 :
         final_grade = "A"
         logic_used = "Heuristic (Elite Criteria)"
     else:
