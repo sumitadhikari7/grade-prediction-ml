@@ -47,3 +47,13 @@ if st.button("Predict Grade"):
     if assignments is None or projects is None or midterms is None:
         st.error("Invalid input format. Use comma separated numbers.")
         st.stop()
+
+    calculated_default = (assignments + projects + midterms) / 3
+
+    if quiz_input.strip() == "":
+        quiz = calculated_default
+    else:
+        quiz = get_average_input(quiz_input)
+        if quiz is None:
+            st.error("Invalid quiz input.")
+            st.stop()
