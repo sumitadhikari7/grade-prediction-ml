@@ -57,3 +57,20 @@ if st.button("Predict Grade"):
         if quiz is None:
             st.error("Invalid quiz input.")
             st.stop()
+
+    
+    participation_score = calculate_participation(attendance, quiz, study_hours)
+
+    input_dict = {
+        'Attendance (%)': attendance,
+        'Midterm_Score': midterms,
+        'Assignments_Avg': assignments,
+        'Quizzes_Avg': quiz,
+        'Participation_Score': participation_score,
+        'Projects_Score': projects,
+        'Study_Hours_per_Week': study_hours,
+        'Sleep_Hours_per_Night': sleep_hours
+    }
+
+    input_data = pd.DataFrame([input_dict])
+    input_data = input_data[model.feature_names_in_]
