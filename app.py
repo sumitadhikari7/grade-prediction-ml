@@ -25,3 +25,10 @@ def calculate_participation(attendance, quiz_avg, study_hours):
     )
 
     return np.clip(participation, 0, 100)
+
+st.subheader("Enter Academic Scores")
+
+assignments_input = st.text_input("Assignment Scores (comma separated)", "80,85,90")
+projects_input = st.text_input("Project Scores (comma separated)", "85,90")
+midterms_input = st.text_input("Midterm Scores (comma separated)", "78,82")
+quiz_input = st.text_input("Quiz Scores (comma separated, optional)", "")
