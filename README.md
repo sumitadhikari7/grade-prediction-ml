@@ -231,7 +231,11 @@ cd grade-prediction-ml
 ```bash
 pip install -r requirements.txt
 ```
-
+#### 3. Run the Application
+Start the Streamlit application using the following command.
+```bash
+streamlit run app.py
+```
 ### Final Project Conclusion
 This project evolved from a failed linear regression to a sophisticated hybrid system. It proves that in real-world applications, **Machine Learning is most powerful when combined with domain-specific logic.**
 
