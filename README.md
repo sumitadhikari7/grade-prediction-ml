@@ -220,6 +220,14 @@ During testing, I discovered that using a static average for missing quiz scores
 * **The Problem:** A student failing all metrics would jump from an **F** to a **D** simply by skipping the quiz input.
 * **The Solution:** I implemented **Proportional Imputation**. If a quiz score is missing, the system now calculates a default based on the student's *actual* performance in Assignments, Midterms and Projects. This ensures the prediction remains "Honest" to the student's demonstrated ability.
 ---
+
+### Installation
+#### 1. Clone the repository
+```bash
+git clone https://github.com/sumitadhikari7/grade-prediction-ml.git
+cd grade-prediction-ml
+```
+
 ### Final Project Conclusion
 This project evolved from a failed linear regression to a sophisticated hybrid system. It proves that in real-world applications, **Machine Learning is most powerful when combined with domain-specific logic.**
 
