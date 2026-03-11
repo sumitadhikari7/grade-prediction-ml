@@ -236,6 +236,16 @@ Start the Streamlit application using the following command.
 ```bash
 streamlit run app.py
 ```
+#### 4. Open in Browser
+After running the command, the application will automatically open in your browser at:
+```bash
+http://localhost:8501
+```
+#### 5. Use the Application
+- Enter or select the laptop specifications in the interface
+- Click `Predict Price`
+- The model will display the estimated laptop price
+---
 ### Final Project Conclusion
 This project evolved from a failed linear regression to a sophisticated hybrid system. It proves that in real-world applications, **Machine Learning is most powerful when combined with domain-specific logic.**
 
