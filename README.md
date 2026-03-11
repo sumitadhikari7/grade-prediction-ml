@@ -227,6 +227,10 @@ During testing, I discovered that using a static average for missing quiz scores
 git clone https://github.com/sumitadhikari7/grade-prediction-ml.git
 cd grade-prediction-ml
 ```
+#### 2. Install required packages
+```bash
+pip install -r requirements.txt
+```
 
 ### Final Project Conclusion
 This project evolved from a failed linear regression to a sophisticated hybrid system. It proves that in real-world applications, **Machine Learning is most powerful when combined with domain-specific logic.**
